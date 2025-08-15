@@ -1,0 +1,75 @@
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+
+### Logs ###
+*.log
+*.out
+
+### Build ###
+/build/
+/target/
+/out/
+
+### Gradle ###
+.gradle/
+/gradle/
+/.gradle-cache/
+!gradle-wrapper.jar
+
+### Maven ###
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Spring STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+bin/
+
+### NetBeans ###
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### OS Files ###
+.DS_Store
+Thumbs.db
+
+### Env / Secret Files ###
+.env
+application.yml
+application.properties
+application-*.yml
+application-*.yaml
+application-*.properties
+
+### Test Reports ###
+/test-output/
+/surefire-reports/
+
+# .gitignore
+src/main/java/com/ieunjin/farmlogs/
