@@ -1,0 +1,20 @@
+package com.ieunjin.farmlogs.dto.auth;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class RegisterRequestDto {
+    @NotBlank
+    private String username;
+    @NotBlank
+    private String password;
+    @NotBlank
+    private String password2;
+    @NotBlank
+    private String nickname;
+}
