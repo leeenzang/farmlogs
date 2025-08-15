@@ -8,9 +8,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.ieunjin.farmlogs.jwt.JwtAuthFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -25,6 +31,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/**").authenticated()    // 그 외 요청은 인증 필요
                 )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
