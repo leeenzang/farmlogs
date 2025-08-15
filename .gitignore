@@ -70,6 +70,3 @@ application-*.properties
 ### Test Reports ###
 /test-output/
 /surefire-reports/
-
-# .gitignore
-src/main/java/com/ieunjin/farmlogs/
