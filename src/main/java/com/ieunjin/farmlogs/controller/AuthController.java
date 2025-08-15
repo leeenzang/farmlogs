@@ -43,10 +43,12 @@ public class AuthController {
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String token = JwtUtils.resolveToken(request);
 
-        if (token != null && jwtProvider.validateToken(token)) {
-            String username = jwtProvider.getUsername(token);
-            refreshTokenRepository.deleteByUsername(username);
+        if (token == null || !jwtProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
         }
+
+        String username = jwtProvider.getUsername(token);
+        refreshTokenRepository.deleteByUsername(username);
 
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
