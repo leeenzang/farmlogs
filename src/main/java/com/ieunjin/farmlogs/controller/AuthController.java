@@ -7,6 +7,7 @@ import com.ieunjin.farmlogs.jwt.JwtProvider;
 import com.ieunjin.farmlogs.jwt.JwtUtils;
 import com.ieunjin.farmlogs.repository.RefreshTokenRepository;
 import com.ieunjin.farmlogs.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,19 +25,20 @@ public class AuthController {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
-
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestDto requestDto) {
         authService.register(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto) {
         LoginResponseDto responseDto = authService.login(requestDto);
         return ResponseEntity.ok(responseDto);
     }
-
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String token = JwtUtils.resolveToken(request);
