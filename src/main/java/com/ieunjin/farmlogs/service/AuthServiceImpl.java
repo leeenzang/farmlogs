@@ -61,13 +61,13 @@ public class AuthServiceImpl implements AuthService {
         String username = requestDto.getUsername();
         String rawPassword = requestDto.getPassword();
 
-        // 아이디로 유저 조회
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+        User user = userRepository.findByUsername(username).orElse(null);
 
-        // 비밀번호 검증
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        String passwordHash = (user != null) ? user.getPassword()
+                : "$2a$10$7EqJtq98hPqEX7fNZaFWoOa5r5rQ9r5rQ9r5rQ9r5rQ9r";
+
+        if (user == null || !passwordEncoder.matches(rawPassword, passwordHash)) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
         // JWT 토큰 발급
