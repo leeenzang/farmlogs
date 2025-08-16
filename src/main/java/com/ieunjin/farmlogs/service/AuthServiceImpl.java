@@ -6,9 +6,12 @@ import com.ieunjin.farmlogs.dto.auth.RegisterRequestDto;
 import com.ieunjin.farmlogs.entity.RefreshToken;
 import com.ieunjin.farmlogs.entity.Role;
 import com.ieunjin.farmlogs.entity.User;
+import com.ieunjin.farmlogs.exception.BusinessException;
+import com.ieunjin.farmlogs.exception.ErrorCode;
 import com.ieunjin.farmlogs.jwt.JwtProvider;
 import com.ieunjin.farmlogs.repository.RefreshTokenRepository;
 import com.ieunjin.farmlogs.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,12 +37,12 @@ public class AuthServiceImpl implements AuthService {
 
         // 아이디 중복 체크
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+            throw new BusinessException(ErrorCode.DUPLICATE_USERNAME);
         }
 
         // 비밀번호 확인
         if (!password.equals(password2)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
         }
 
         // 비밀번호 암호화
@@ -67,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
                 : "$2a$10$7EqJtq98hPqEX7fNZaFWoOa5r5rQ9r5rQ9r5rQ9r5rQ9r";
 
         if (user == null || !passwordEncoder.matches(rawPassword, passwordHash)) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+            throw new BusinessException(ErrorCode.AUTH_FAILED);
         }
 
         // JWT 토큰 발급
@@ -85,5 +88,16 @@ public class AuthServiceImpl implements AuthService {
 
         // 응답 DTO 구성
         return new LoginResponseDto(accessToken, refreshToken, user.getId(), user.getNickname());
+    }
+
+    @Transactional
+    @Override
+    public void logout(String token) {
+        if (token == null || !jwtProvider.validateToken(token)) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
+
+        String username = jwtProvider.getUsername(token);
+        refreshTokenRepository.deleteByUsername(username);
     }
 }
