@@ -76,11 +76,26 @@ public class DiaryServiceImpl implements DiaryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DIARY));
 
         if (!diary.getUser().getUsername().equals(username)) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_USER);
+            throw new BusinessException(ErrorCode.FORBIDDEN);
         }
 
         diary.update(request.date(), request.content(), request.weather());
 
         return DiaryResponse.from(diary);
+    }
+
+    @Transactional
+    @Override
+    public void deleteDiary(Long diaryId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DIARY));
+
+        if (!diary.getUser().getUsername().equals(username)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
+        diaryRepository.delete(diary);
     }
 }

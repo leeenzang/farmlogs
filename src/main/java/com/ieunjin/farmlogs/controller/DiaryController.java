@@ -52,4 +52,11 @@ public class DiaryController {
         DiaryResponse response = diaryService.updateDiary(id, request);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "다이어리 삭제")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDiary(@PathVariable Long id) {
+        diaryService.deleteDiary(id);
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
 }

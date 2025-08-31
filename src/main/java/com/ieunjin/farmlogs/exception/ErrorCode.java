@@ -13,6 +13,7 @@ public enum ErrorCode {
     AUTH_FAILED(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "해당 유저가 존재하지 않습니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN,"접근 권한이 없습니다."),
 
     //다이어리
     NOT_FOUND_DIARY(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다."),

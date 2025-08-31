@@ -11,8 +11,8 @@ public interface DiaryService {
     DiaryResponse createDiary(DiaryCreateRequest request);
     DiaryResponse getDiaryById(Long id);
     DiaryListResponse getDiaryList(Pageable pageable);
-
     DiaryResponse updateDiary(Long diaryId, DiaryUpdateRequest request);
+    void deleteDiary(Long diaryId);
 
 
-    }
+}
