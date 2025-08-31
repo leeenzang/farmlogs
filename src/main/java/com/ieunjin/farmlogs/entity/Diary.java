@@ -1,5 +1,6 @@
 package com.ieunjin.farmlogs.entity;
 
+import com.ieunjin.farmlogs.common.LunarDateUtil;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -44,5 +45,12 @@ public class Diary {
         this.lunarDate = lunarDate;
         this.content = content;
         this.weather = weather;
+    }
+
+    public void update(LocalDate date, String content, String weather) {
+        this.date = date;
+        this.content = content;
+        this.weather = weather;
+        this.lunarDate = LunarDateUtil.calculateLunarDate(date);
     }
 }

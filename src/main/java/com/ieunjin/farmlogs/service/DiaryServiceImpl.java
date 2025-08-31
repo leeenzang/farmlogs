@@ -4,6 +4,7 @@ import com.ieunjin.farmlogs.common.LunarDateUtil;
 import com.ieunjin.farmlogs.dto.diary.DiaryCreateRequest;
 import com.ieunjin.farmlogs.dto.diary.DiaryListResponse;
 import com.ieunjin.farmlogs.dto.diary.DiaryResponse;
+import com.ieunjin.farmlogs.dto.diary.DiaryUpdateRequest;
 import com.ieunjin.farmlogs.entity.Diary;
 import com.ieunjin.farmlogs.entity.User;
 import com.ieunjin.farmlogs.exception.BusinessException;
@@ -65,5 +66,21 @@ public class DiaryServiceImpl implements DiaryService {
 
         Page<Diary> page = diaryRepository.findAllByUser(user, pageable);
         return DiaryListResponse.from(page);
+    }
+
+    @Transactional
+    public DiaryResponse updateDiary(Long diaryId, DiaryUpdateRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DIARY));
+
+        if (!diary.getUser().getUsername().equals(username)) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_USER);
+        }
+
+        diary.update(request.date(), request.content(), request.weather());
+
+        return DiaryResponse.from(diary);
     }
 }

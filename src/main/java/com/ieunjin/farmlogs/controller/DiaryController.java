@@ -3,6 +3,7 @@ package com.ieunjin.farmlogs.controller;
 import com.ieunjin.farmlogs.dto.diary.DiaryCreateRequest;
 import com.ieunjin.farmlogs.dto.diary.DiaryListResponse;
 import com.ieunjin.farmlogs.dto.diary.DiaryResponse;
+import com.ieunjin.farmlogs.dto.diary.DiaryUpdateRequest;
 import com.ieunjin.farmlogs.jwt.JwtUtils;
 import com.ieunjin.farmlogs.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +41,15 @@ public class DiaryController {
     @GetMapping
     public ResponseEntity<DiaryListResponse> getDiaryList(Pageable pageable) {
         DiaryListResponse response = diaryService.getDiaryList(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DiaryResponse> updateDiary(
+            @PathVariable Long id,
+            @RequestBody DiaryUpdateRequest request
+    ) {
+        DiaryResponse response = diaryService.updateDiary(id, request);
         return ResponseEntity.ok(response);
     }
 }
