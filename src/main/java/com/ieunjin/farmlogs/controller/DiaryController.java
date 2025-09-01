@@ -26,21 +26,27 @@ public class DiaryController {
     @Operation(summary = "다이어리 등록")
     @PostMapping
     public ResponseEntity<DiaryResponse> createDiary(@RequestBody DiaryCreateRequest request) {
+        log.info("다이어리 작성 요청 date={}", request.date());
         DiaryResponse response = diaryService.createDiary(request);
+        log.info("다이어리 작성 성공 diaryId={}", response.id());
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "다이어리 개별 조회")
     @GetMapping("/{id}")
     public ResponseEntity<DiaryResponse> getDiary(@PathVariable Long id) {
+        log.info("다이어리 조회 요청 diaryId={}", id);
         DiaryResponse response = diaryService.getDiaryById(id);
+        log.info("다이어리 조회 성공 diaryId={}", response.id());
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "다이어리 리스트 조회")
     @GetMapping
     public ResponseEntity<DiaryListResponse> getDiaryList(Pageable pageable) {
+        log.info("다이어리 목록 조회 요청 page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
         DiaryListResponse response = diaryService.getDiaryList(pageable);
+        log.info("다이어리 목록 조회 성공");
         return ResponseEntity.ok(response);
     }
 
@@ -49,14 +55,18 @@ public class DiaryController {
             @PathVariable Long id,
             @RequestBody DiaryUpdateRequest request
     ) {
+        log.info("다이어리 수정 요청 diaryId={}", id);
         DiaryResponse response = diaryService.updateDiary(id, request);
+        log.info("다이어리 수정 성공 diaryId={}", response.id());
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "다이어리 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDiary(@PathVariable Long id) {
+        log.info("다이어리 삭제 요청 diaryId={}", id);
         diaryService.deleteDiary(id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        log.info("다이어리 삭제 완료 diaryId={}", id);
+        return ResponseEntity.noContent().build();
     }
 }
