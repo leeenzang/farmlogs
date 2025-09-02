@@ -18,6 +18,4 @@ public interface DiaryService {
     void deleteDiary(Long diaryId);
     void exportDiariesToExcel(String username, LocalDate startDate, LocalDate endDate, HttpServletResponse response);
 
-
-
-    }
+}

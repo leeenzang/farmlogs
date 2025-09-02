@@ -64,9 +64,20 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
 
+    @Transactional(readOnly = true)
+    @Override
     public DiaryResponse getDiaryById(Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+
         Diary diary = diaryRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DIARY));
+
+        if (!diary.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
         return DiaryResponse.from(diary);
     }
 

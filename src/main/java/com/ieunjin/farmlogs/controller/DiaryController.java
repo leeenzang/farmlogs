@@ -60,6 +60,7 @@ public class DiaryController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "다이어리 수정")
     @PutMapping("/{id}")
     public ResponseEntity<DiaryResponse> updateDiary(
             @PathVariable Long id,
