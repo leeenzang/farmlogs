@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/diaries")
 @RequiredArgsConstructor
@@ -43,9 +45,15 @@ public class DiaryController {
 
     @Operation(summary = "다이어리 리스트 조회")
     @GetMapping
-    public ResponseEntity<DiaryListResponse> getDiaryList(Pageable pageable) {
-        log.info("다이어리 목록 조회 요청 page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
-        DiaryListResponse response = diaryService.getDiaryList(pageable);
+    public ResponseEntity<DiaryListResponse> getDiaryList(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) String keyword,
+            Pageable pageable
+    ) {
+        log.info("다이어리 목록 조회 요청 - page={}, size={}, startDate={}, endDate={}, keyword={}",
+                pageable.getPageNumber(), pageable.getPageSize(), startDate, endDate, keyword);
+        DiaryListResponse response = diaryService.getDiaryList(startDate, endDate, keyword, pageable);
         log.info("다이어리 목록 조회 성공");
         return ResponseEntity.ok(response);
     }

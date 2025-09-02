@@ -7,10 +7,12 @@ import com.ieunjin.farmlogs.dto.diary.DiaryResponse;
 import com.ieunjin.farmlogs.dto.diary.DiaryUpdateRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+
 public interface DiaryService {
     DiaryResponse createDiary(DiaryCreateRequest request);
     DiaryResponse getDiaryById(Long id);
-    DiaryListResponse getDiaryList(Pageable pageable);
+    DiaryListResponse getDiaryList(LocalDate startDate, LocalDate endDate, String keyword, Pageable pageable);
     DiaryResponse updateDiary(Long diaryId, DiaryUpdateRequest request);
     void deleteDiary(Long diaryId);
 

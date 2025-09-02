@@ -12,7 +12,6 @@ import com.ieunjin.farmlogs.exception.ErrorCode;
 import com.ieunjin.farmlogs.jwt.JwtProvider;
 import com.ieunjin.farmlogs.repository.DiaryRepository;
 import com.ieunjin.farmlogs.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -60,9 +62,14 @@ public class DiaryServiceImpl implements DiaryService {
         return DiaryResponse.from(diary);
     }
 
-    public DiaryListResponse getDiaryList(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public DiaryListResponse getDiaryList(
+            LocalDate startDate,
+            LocalDate endDate,
+            String keyword,
+            Pageable pageable
+    ) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
 
@@ -71,8 +78,17 @@ public class DiaryServiceImpl implements DiaryService {
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "date")
         );
-
-        Page<Diary> page = diaryRepository.findAllByUser(user, sortedPageable);
+        Page<Diary> page;
+        if (keyword != null && !keyword.isBlank()) {
+            // 키워드 검색
+            page = diaryRepository.findByUserAndContentContainingIgnoreCase(user, keyword, sortedPageable);
+        } else if (startDate != null && endDate != null) {
+            // 날짜 범위 검색
+            page = diaryRepository.findAllByUserAndDateBetween(user, startDate, endDate, sortedPageable);
+        } else {
+            //전체 조회
+            page = diaryRepository.findAllByUser(user, sortedPageable);
+        }
         return DiaryListResponse.from(page);
     }
 
