@@ -47,10 +47,8 @@ public class Diary {
         this.weather = weather;
     }
 
-    public void update(LocalDate date, String content, String weather) {
-        this.date = date;
+    public void updateContent(String content) {
         this.content = content;
-        this.weather = weather;
-        this.lunarDate = LunarDateUtil.calculateLunarDate(date);
+        this.updatedAt = LocalDateTime.now();
     }
 }

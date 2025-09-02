@@ -15,6 +15,8 @@ import com.ieunjin.farmlogs.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +66,13 @@ public class DiaryServiceImpl implements DiaryService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
 
-        Page<Diary> page = diaryRepository.findAllByUser(user, pageable);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "date")
+        );
+
+        Page<Diary> page = diaryRepository.findAllByUser(user, sortedPageable);
         return DiaryListResponse.from(page);
     }
 
@@ -79,7 +87,7 @@ public class DiaryServiceImpl implements DiaryService {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
 
-        diary.update(request.date(), request.content(), request.weather());
+        diary.updateContent(request.content());
 
         return DiaryResponse.from(diary);
     }
