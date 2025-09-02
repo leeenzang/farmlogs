@@ -7,14 +7,16 @@ import com.ieunjin.farmlogs.dto.diary.DiaryUpdateRequest;
 import com.ieunjin.farmlogs.jwt.JwtUtils;
 import com.ieunjin.farmlogs.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @RestController
@@ -76,5 +78,19 @@ public class DiaryController {
         diaryService.deleteDiary(id);
         log.info("다이어리 삭제 완료 diaryId={}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "다이어리 내보내기")
+    @GetMapping("/export")
+    public void exportDiaries(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            HttpServletResponse response
+    ) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("다이어리 엑셀 내보내기 요청 - username={}, startDate={}, endDate={}",
+                username, startDate, endDate);
+        diaryService.exportDiariesToExcel(username, startDate, endDate, response);
+        log.info("다이어리 엑셀 내보내기 완료 - username={}", username);
     }
 }

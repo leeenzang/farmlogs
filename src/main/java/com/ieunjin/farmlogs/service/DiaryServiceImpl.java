@@ -13,6 +13,10 @@ import com.ieunjin.farmlogs.jwt.JwtProvider;
 import com.ieunjin.farmlogs.repository.DiaryRepository;
 import com.ieunjin.farmlogs.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,8 +25,12 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -121,5 +129,51 @@ public class DiaryServiceImpl implements DiaryService {
         }
 
         diaryRepository.delete(diary);
+    }
+
+
+    @Transactional(readOnly = true)
+    public void exportDiariesToExcel(
+            String username,
+            LocalDate startDate,
+            LocalDate endDate,
+            HttpServletResponse response
+    ) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+
+        List<Diary> diaries = diaryRepository.findAllByUserAndDateBetween(
+                user, startDate, endDate, Sort.by(Sort.Direction.DESC, "date")
+        );
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Diaries");
+
+            // 헤더
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("날짜 (양력)");
+            headerRow.createCell(1).setCellValue("날짜 (음력)");
+            headerRow.createCell(2).setCellValue("내용");
+
+            // 데이터
+            int rowIdx = 1;
+            for (Diary diary : diaries) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(diary.getDate().toString());
+                row.createCell(1).setCellValue(diary.getLunarDate());
+                row.createCell(2).setCellValue(diary.getContent());
+            }
+
+            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            String filename = "logs_" + todayStr + ".xlsx";
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+
+            workbook.write(response.getOutputStream());
+        } catch (IOException e) {
+            // 체크 예외를 런타임 예외로 감싸서 위로 올림
+            throw new RuntimeException("엑셀 내보내기 중 오류 발생", e);
+        }
     }
 }
