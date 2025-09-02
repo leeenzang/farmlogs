@@ -44,7 +44,7 @@ public class JwtProvider {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role", role)
+                .claim("role", "ROLE_" + role)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(signingKey, SignatureAlgorithm.HS512)
