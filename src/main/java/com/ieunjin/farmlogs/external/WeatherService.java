@@ -1,10 +1,13 @@
 package com.ieunjin.farmlogs.external;
 
 import com.ieunjin.farmlogs.dto.WeatherResponse;
+import com.ieunjin.farmlogs.dto.WeatherTodayDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,23 +63,4 @@ public class WeatherService {
                 ));
     }
 
-    public Map<String, String> fetchWeatherForecast(String targetDate) {
-        String[] base = DateTimeUtil.getForecastBaseDateTime();
-
-        WeatherResponse response = weatherClient.getVilageFcst(
-                1, 1000, "JSON", base[0], base[1], 60, 127
-        );
-
-        List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
-        Set<String> targetCats = Set.of("POP", "PTY", "SKY", "TMN", "TMX");
-
-        return items.stream()
-                .filter(i -> targetCats.contains(i.getCategory()))
-                .filter(i -> i.getFcstDate() != null && i.getFcstDate().equals(targetDate))
-                .collect(Collectors.toMap(
-                        WeatherResponse.Item::getCategory,
-                        WeatherResponse.Item::getFcstValue,
-                        (v1, v2) -> v2
-                ));
-    }
 }

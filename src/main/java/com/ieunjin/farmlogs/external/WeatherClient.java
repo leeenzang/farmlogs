@@ -30,14 +30,4 @@ public interface WeatherClient {
             @RequestParam("ny") int ny
     );
 
-    @GetMapping("/getUltraSrtNcst?ServiceKey=z%2BUvCqUF74ij9g%2FfyQQLXE0JrQohJmqtdfLHHxLC0LAjkMos00apQ9s3eqaa%2BK77jg8DEsRsQFfCeY6h070mgg%3D%3D")
-    WeatherResponse getVilageFcst(
-            @RequestParam("pageNo") int pageNo,
-            @RequestParam("numOfRows") int numOfRows,
-            @RequestParam("dataType") String dataType,
-            @RequestParam("base_date") String baseDate,
-            @RequestParam("base_time") String baseTime,
-            @RequestParam("nx") int nx,
-            @RequestParam("ny") int ny
-    );
 }

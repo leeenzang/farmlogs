@@ -38,19 +38,5 @@ public class DateTimeUtil {
         return new String[]{ baseDate, baseTime };
     }
 
-    public static String[] getForecastBaseDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        List<Integer> baseHours = List.of(2, 5, 8, 11, 14, 17, 20, 23);
-        int hour = now.getHour();
 
-        int baseHour = baseHours.stream().filter(h -> h <= hour).reduce((f, s) -> s).orElse(23);
-        LocalDate baseDate = (baseHour == 23 && hour < 2)
-                ? now.minusDays(1).toLocalDate()
-                : now.toLocalDate();
-
-        return new String[]{
-                baseDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
-                String.format("%02d00", baseHour)
-        };
-    }
 }

@@ -36,8 +36,5 @@ public class WeatherController {
         return weatherService.fetchWeatherNow();
     }
 
-    @GetMapping("/api/weather-forecast")
-    public Map<String, String> getForecast(@RequestParam String targetDate) {
-        return weatherService.fetchWeatherForecast(targetDate);
-    }
+
 }
