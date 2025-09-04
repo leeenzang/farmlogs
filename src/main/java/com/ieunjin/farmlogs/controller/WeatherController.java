@@ -20,11 +20,15 @@ public class WeatherController {
 
     @GetMapping("/today")
     public WeatherTodayDto fetchNowWeather() {
-        return weatherService.fetchWeatherNow();
-    }
-    @GetMapping("/tomorrow")
-    public WeatherTomorrowDto fetchTomorrowWeather() {
-        return weatherService.fetchWeatherTomorrow();
+        log.info("GET /api/weather/today 진입");
+        WeatherTodayDto dto = weatherService.fetchWeatherNow();
+        return dto;
     }
 
+    @GetMapping("/tomorrow")
+    public WeatherTomorrowDto fetchTomorrowWeather() {
+        log.info("GET /api/weather/tomorrow 진입");
+        WeatherTomorrowDto dto = weatherService.fetchWeatherTomorrow();
+        return dto;
+    }
 }
