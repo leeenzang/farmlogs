@@ -2,6 +2,7 @@ package com.ieunjin.farmlogs.service;
 
 import com.ieunjin.farmlogs.common.DateTimeUtil;
 import com.ieunjin.farmlogs.common.WeatherUtil;
+import com.ieunjin.farmlogs.config.WeatherApiConfig;
 import com.ieunjin.farmlogs.dto.WeatherResponse;
 import com.ieunjin.farmlogs.dto.WeatherTodayDto;
 import com.ieunjin.farmlogs.dto.WeatherTomorrowDto;
@@ -20,10 +21,14 @@ import java.util.List;
 public class WeatherService {
 
     private final WeatherClient weatherClient;
+    private final WeatherApiConfig weatherApiConfig;
 
     public WeatherTodayDto fetchWeatherNow() {
+        String apiKey = weatherApiConfig.getApiKey();
         String[] base = DateTimeUtil.getCurrentBaseDateTime();
+
         WeatherResponse response = weatherClient.getUltraSrtNcst(
+                apiKey,
                 1, 1000, "JSON", base[0], base[1], 60, 137
         );
 
@@ -49,10 +54,12 @@ public class WeatherService {
     }
 
     public WeatherTomorrowDto fetchWeatherTomorrow() {
+        String apiKey = weatherApiConfig.getApiKey();
         String tomorrow = LocalDate.now().plusDays(1)
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         WeatherResponse response = weatherClient.getVilageFcst(
+                apiKey,
                 1, 1000, "JSON",
                 DateTimeUtil.getBaseDateTime()[0],  // base_date
                 DateTimeUtil.getBaseDateTime()[1],  // base_time
