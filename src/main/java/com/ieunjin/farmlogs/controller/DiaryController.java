@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -93,5 +94,15 @@ public class DiaryController {
                 username, startDate, endDate);
         diaryService.exportDiariesToExcel(username, startDate, endDate, response);
         log.info("다이어리 엑셀 내보내기 완료 - username={}", username);
+    }
+
+    @Operation(summary = "특정 날짜 다이어리 조회")
+    @GetMapping("/date/{date}")
+    public ResponseEntity<DiaryResponse> getDiaryByDate(
+            @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        log.info("특정 날짜 다이어리 조회 요청 - date={}", date);
+        DiaryResponse response = diaryService.getDiaryByExactDate(date);
+        return ResponseEntity.ok(response);
     }
 }
