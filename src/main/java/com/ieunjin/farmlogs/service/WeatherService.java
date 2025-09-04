@@ -20,6 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WeatherService {
 
+    private static final int GRID_X = 60;
+    private static final int GRID_Y = 137;
+
     private final WeatherClient weatherClient;
     private final WeatherApiConfig weatherApiConfig;
 
@@ -31,7 +34,7 @@ public class WeatherService {
 
         WeatherResponse response = weatherClient.getUltraSrtFcst(
                 apiKey,
-                1, 1000, "JSON", baseDate, baseTime, 60, 137
+                1, 1000, "JSON", baseDate, baseTime, GRID_X, GRID_Y
         );
 
         List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
@@ -66,13 +69,14 @@ public class WeatherService {
         String apiKey = weatherApiConfig.getApiKey();
         String tomorrow = LocalDate.now().plusDays(1)
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String[] baseDateTime = DateTimeUtil.getBaseDateTime();
 
         WeatherResponse response = weatherClient.getVilageFcst(
                 apiKey,
                 1, 1000, "JSON",
-                DateTimeUtil.getBaseDateTime()[0],  // base_date
-                DateTimeUtil.getBaseDateTime()[1],  // base_time
-                60, 137
+                baseDateTime[0],
+                baseDateTime[1],
+                GRID_X, GRID_Y
         );
 
         List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
