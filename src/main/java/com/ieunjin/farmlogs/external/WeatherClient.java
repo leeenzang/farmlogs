@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "weatherClient", url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0")
 public interface WeatherClient {
 
-    @GetMapping("/getUltraSrtNcst")
-    WeatherResponse getUltraSrtNcst(
+    @GetMapping("/getUltraSrtFcst")
+    WeatherResponse getUltraSrtFcst(
             @RequestParam("ServiceKey") String serviceKey,
             @RequestParam("pageNo") int pageNo,
             @RequestParam("numOfRows") int numOfRows,

@@ -29,14 +29,33 @@ public class DateTimeUtil {
         };
     }
 
-    public static String[] getCurrentBaseDateTime() {
-        LocalDateTime now = LocalDateTime.now();
+    public static String getClosestFcstTime() {
+        int nowMin = LocalDateTime.now().getMinute();
+        int nowHour = LocalDateTime.now().getHour();
 
-        String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String baseTime = now.format(DateTimeFormatter.ofPattern("HH")) + "00";
+        // 현재 시간에서 30분 기준으로 반올림
+        if (nowMin >= 30) {
+            nowHour += 1;
+        }
 
-        return new String[]{ baseDate, baseTime };
+        return String.format("%02d00", nowHour);
     }
 
+    public static String getUltraSrtFcstBaseTime() {
+        LocalDateTime now = LocalDateTime.now();
+        int minute = now.getMinute();
+        int hour = now.getHour();
+
+        // 기준 시각이 30분 단위니까 이전 기준 시간으로 보정
+        if (minute < 45) {
+            if (hour == 0) {
+                return "2330"; // 전날 마지막 시간
+            }
+            hour -= 1;
+            return String.format("%02d30", hour);
+        } else {
+            return String.format("%02d30", hour);
+        }
+    }
 
 }

@@ -25,11 +25,13 @@ public class WeatherService {
 
     public WeatherTodayDto fetchWeatherNow() {
         String apiKey = weatherApiConfig.getApiKey();
-        String[] base = DateTimeUtil.getCurrentBaseDateTime();
 
-        WeatherResponse response = weatherClient.getUltraSrtNcst(
+        String baseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseTime = DateTimeUtil.getUltraSrtFcstBaseTime();
+
+        WeatherResponse response = weatherClient.getUltraSrtFcst(
                 apiKey,
-                1, 1000, "JSON", base[0], base[1], 60, 137
+                1, 1000, "JSON", baseDate, baseTime, 60, 137
         );
 
         List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
@@ -37,21 +39,28 @@ public class WeatherService {
         String temperature = getValue(items, "T1H");
         String humidity = getValue(items, "REH");
         String pty = getValue(items, "PTY");
+        String sky = getValue(items, "SKY");
 
         return WeatherTodayDto.builder()
                 .temperature(temperature)
                 .humidity(humidity)
-                .weatherStatus(WeatherUtil.determineWeatherStatus(pty, null))
+                .weatherStatus(WeatherUtil.determineWeatherStatus(pty, sky))
                 .build();
     }
 
     private String getValue(List<WeatherResponse.Item> items, String category) {
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String closestTime = DateTimeUtil.getClosestFcstTime();
+
         return items.stream()
-                .filter(i -> category.equals(i.getCategory()) && i.getObsrValue() != null)
-                .map(WeatherResponse.Item::getObsrValue)
+                .filter(i -> category.equals(i.getCategory()) &&
+                        today.equals(i.getFcstDate()) &&
+                        closestTime.equals(i.getFcstTime()))
+                .map(WeatherResponse.Item::getFcstValue)
                 .findFirst()
                 .orElse("정보 없음");
     }
+
 
     public WeatherTomorrowDto fetchWeatherTomorrow() {
         String apiKey = weatherApiConfig.getApiKey();

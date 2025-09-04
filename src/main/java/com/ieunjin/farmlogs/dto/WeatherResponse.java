@@ -79,5 +79,8 @@ public class WeatherResponse {
 
         @JsonProperty("fcstValue")
         private String fcstValue;
+
+        @JsonProperty("fcstTime")
+        private String fcstTime;
     }
 }
