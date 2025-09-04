@@ -45,28 +45,31 @@ public class WeatherService {
     }
 
 
-    public Map<String, String> fetchWeatherNow() {
-        String[] base = DateTimeUtil.getCurrentBaseDateTime(); // 실황용 날짜/시간
+    public WeatherTodayDto fetchWeatherNow() {
+        String[] base = DateTimeUtil.getCurrentBaseDateTime();
         WeatherResponse response = weatherClient.getUltraSrtNcst(
                 1, 1000, "JSON", base[0], base[1], 60, 137
         );
 
         List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
-        Set<String> targetCats = Set.of("T1H", "REH", "PTY");
 
-        Map<String, String> result = items.stream()
-                .filter(i -> targetCats.contains(i.getCategory()))
-                .collect(Collectors.toMap(
-                        WeatherResponse.Item::getCategory,
-                        WeatherResponse.Item::getObsrValue,
-                        (v1, v2) -> v2 // 중복 시 최신값 유지
-                ));
+        String temperature = getValue(items, "T1H");
+        String humidity = getValue(items, "REH");
+        String pty = getValue(items, "PTY");
 
-        String pty = result.get("PTY");
-        String weatherStatus = WeatherUtil.determineWeatherStatus(pty, null);
-        result.put("weatherStatus", weatherStatus);
+        return WeatherTodayDto.builder()
+                .temperature(temperature)
+                .humidity(humidity)
+                .weatherStatus(WeatherUtil.determineWeatherStatus(pty, null))
+                .build();
+    }
 
-        return result;
+    private String getValue(List<WeatherResponse.Item> items, String category) {
+        return items.stream()
+                .filter(i -> category.equals(i.getCategory()) && i.getObsrValue() != null)
+                .map(WeatherResponse.Item::getObsrValue)
+                .findFirst()
+                .orElse("정보 없음");
     }
 
 }

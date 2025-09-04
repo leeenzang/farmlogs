@@ -2,6 +2,7 @@ package com.ieunjin.farmlogs.controller;
 
 import com.ieunjin.farmlogs.dto.WeatherDto;
 import com.ieunjin.farmlogs.dto.WeatherResponse;
+import com.ieunjin.farmlogs.dto.WeatherTodayDto;
 import com.ieunjin.farmlogs.external.WeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class WeatherController {
     }
 
     @GetMapping("/api/weather-now")
-    public Map<String, String> fetchNowWeather() {
+    public WeatherTodayDto fetchNowWeather() {
         return weatherService.fetchWeatherNow();
     }
 

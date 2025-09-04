@@ -13,7 +13,9 @@ public class WeatherUtil {
                 case "7" -> "눈날림";
                 default -> "강수";
             };
-        } else {
+        }
+
+        if (skyCode != null) {
             return switch (skyCode) {
                 case "1" -> "맑음";
                 case "3" -> "구름많음";
@@ -21,5 +23,8 @@ public class WeatherUtil {
                 default -> "알 수 없음";
             };
         }
+
+        // 둘 다 null일 경우 방어
+        return "정보 없음";
     }
 }
