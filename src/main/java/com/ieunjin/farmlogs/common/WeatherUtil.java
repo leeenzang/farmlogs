@@ -1,4 +1,4 @@
-package com.ieunjin.farmlogs.external;
+package com.ieunjin.farmlogs.common;
 
 public class WeatherUtil {
     public static String determineWeatherStatus(String ptyCode, String skyCode) {

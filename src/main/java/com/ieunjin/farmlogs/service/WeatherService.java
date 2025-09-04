@@ -1,8 +1,11 @@
-package com.ieunjin.farmlogs.external;
+package com.ieunjin.farmlogs.service;
 
+import com.ieunjin.farmlogs.common.DateTimeUtil;
+import com.ieunjin.farmlogs.common.WeatherUtil;
 import com.ieunjin.farmlogs.dto.WeatherResponse;
 import com.ieunjin.farmlogs.dto.WeatherTodayDto;
 import com.ieunjin.farmlogs.dto.WeatherTomorrowDto;
+import com.ieunjin.farmlogs.external.WeatherClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,9 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,31 +20,6 @@ import java.util.stream.Collectors;
 public class WeatherService {
 
     private final WeatherClient weatherClient;
-
-    public WeatherResponse getTodayWeather() {
-        String[] baseDateTime = DateTimeUtil.getBaseDateTime(); // 날짜 계산 유틸
-        String baseDate = baseDateTime[0];
-        String baseTime = baseDateTime[1];
-
-        int nx = 60;
-        int ny = 137;
-
-        WeatherResponse response = weatherClient.getUltraSrtNcst(
-                1, 10, "JSON", baseDate, baseTime, nx, ny);
-
-        log.debug("날씨 API 응답: {}", response);
-        return response;
-    }
-
-    public String getTodayWeatherRawJson() {
-        String[] baseDateTime = DateTimeUtil.getBaseDateTime();
-        String baseDate = baseDateTime[0];
-        String baseTime = baseDateTime[1];
-
-        return weatherClient.getUltraSrtNcstS(
-                1, 10, "JSON", baseDate, baseTime, 60, 127);
-    }
-
 
     public WeatherTodayDto fetchWeatherNow() {
         String[] base = DateTimeUtil.getCurrentBaseDateTime();
@@ -91,7 +66,6 @@ public class WeatherService {
 
         return WeatherTomorrowDto.builder()
                 .weatherStatus(WeatherUtil.determineWeatherStatus(pty, sky))
-                .precipitationType(pty)
                 .precipitationProbability(getForecastValue(items, "POP", tomorrow))
                 .lowestTemp(getForecastValue(items, "TMN", tomorrow))
                 .highestTemp(getForecastValue(items, "TMX", tomorrow))

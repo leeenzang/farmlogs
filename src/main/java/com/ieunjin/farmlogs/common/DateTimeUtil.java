@@ -1,4 +1,4 @@
-package com.ieunjin.farmlogs.external;
+package com.ieunjin.farmlogs.common;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
