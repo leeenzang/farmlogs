@@ -7,20 +7,22 @@ import com.ieunjin.farmlogs.service.WeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@RequestMapping("/api/weather")
 @RestController
 @RequiredArgsConstructor
 public class WeatherController {
 
     private final WeatherService weatherService;
 
-    @GetMapping("/api/weather-now")
+    @GetMapping("/today")
     public WeatherTodayDto fetchNowWeather() {
         return weatherService.fetchWeatherNow();
     }
-    @GetMapping("/api/weather-tomorrow")
+    @GetMapping("/tomorrow")
     public WeatherTomorrowDto fetchTomorrowWeather() {
         return weatherService.fetchWeatherTomorrow();
     }
