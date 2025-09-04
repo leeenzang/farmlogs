@@ -187,4 +187,17 @@ public class DiaryServiceImpl implements DiaryService {
             throw new RuntimeException("엑셀 내보내기 중 오류 발생", e);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DiaryResponse getDiaryByExactDate(LocalDate date) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+
+        Diary diary = diaryRepository.findByUserAndDate(user, date)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DIARY));
+
+        return DiaryResponse.from(diary);
+    }
 }

@@ -17,5 +17,5 @@ public interface DiaryService {
     DiaryResponse updateDiary(Long diaryId, DiaryUpdateRequest request);
     void deleteDiary(Long diaryId);
     void exportDiariesToExcel(String username, LocalDate startDate, LocalDate endDate, HttpServletResponse response);
-
+    DiaryResponse getDiaryByExactDate(LocalDate date);
 }
