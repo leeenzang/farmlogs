@@ -17,7 +17,6 @@
 .gradle/
 /gradle/
 /.gradle-cache/
-!gradle-wrapper.jar
 
 ### Maven ###
 pom.xml.tag
@@ -61,11 +60,7 @@ Thumbs.db
 
 ### Env / Secret Files ###
 .env
-application.yml
-application.properties
-application-*.yml
-application-*.yaml
-application-*.properties
+
 
 ### Test Reports ###
 /test-output/
