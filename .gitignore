@@ -60,11 +60,7 @@ Thumbs.db
 
 ### Env / Secret Files ###
 .env
-application.yml
-application.properties
-application-*.yml
-application-*.yaml
-application-*.properties
+
 
 ### Test Reports ###
 /test-output/

@@ -1,0 +1,33 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token:
+    expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME}
+  refresh-token:
+    expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql.BasicBinder: off
+
+weather:
+  api-key: ${WEATHER_API_KEY}
