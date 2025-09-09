@@ -17,7 +17,6 @@
 .gradle/
 /gradle/
 /.gradle-cache/
-!gradle-wrapper.jar
 
 ### Maven ###
 pom.xml.tag
