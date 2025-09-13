@@ -37,9 +37,9 @@ management:
     web:
       exposure:
         include: health,info,metrics
-  metrics:
-    export:
-      datadog:
+  datadog:
+    metrics:
+      export:
         enabled: true
-        api-key: ${DD_API_KEY}
-        step: 30s   # 30초마다 Datadog으로 전송
+        apiKey: ${DATADOG_API_KEY}
+        step: 30s
