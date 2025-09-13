@@ -48,6 +48,12 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:5.2.5'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+	implementation 'io.micrometer:micrometer-registry-datadog'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine'
+
 }
 
 tasks.named('test') {

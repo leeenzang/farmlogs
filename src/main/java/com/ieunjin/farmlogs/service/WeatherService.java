@@ -9,6 +9,7 @@ import com.ieunjin.farmlogs.dto.WeatherTomorrowDto;
 import com.ieunjin.farmlogs.external.WeatherClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ public class WeatherService {
     private final WeatherClient weatherClient;
     private final WeatherApiConfig weatherApiConfig;
 
+    @Cacheable(value = "weatherNow", key = "'now'")
     public WeatherTodayDto fetchWeatherNow() {
         String apiKey = weatherApiConfig.getApiKey();
 
@@ -65,6 +67,7 @@ public class WeatherService {
     }
 
 
+    @Cacheable(value = "weatherTomorrow", key = "'tomorrow'")
     public WeatherTomorrowDto fetchWeatherTomorrow() {
         String apiKey = weatherApiConfig.getApiKey();
         String tomorrow = LocalDate.now().plusDays(1)

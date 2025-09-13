@@ -1,5 +1,6 @@
 server:
-  port: 8081
+  port: 8080
+
 
 spring:
   datasource:
@@ -8,6 +9,11 @@ spring:
     password: ${JDBC_DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
+    cache:
+      type: caffeine
+      cache-names: weatherNow, weatherTomorrow
+      caffeine:
+        spec: maximumSize=100,expireAfterWrite=30m
     hibernate:
       ddl-auto: update
     show-sql: false
@@ -31,3 +37,15 @@ logging:
 
 weather:
   api-key: ${WEATHER_API_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  datadog:
+    metrics:
+      export:
+        enabled: true
+        apiKey: ${DATADOG_API_KEY}
+        step: 30s
