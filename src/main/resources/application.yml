@@ -31,3 +31,15 @@ logging:
 
 weather:
   api-key: ${WEATHER_API_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  metrics:
+    export:
+      datadog:
+        enabled: true
+        api-key: ${DD_API_KEY}
+        step: 30s   # 30초마다 Datadog으로 전송
