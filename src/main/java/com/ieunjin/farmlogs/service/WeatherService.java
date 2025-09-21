@@ -35,6 +35,7 @@ public class WeatherService {
         return callWeatherNowApi();
     }
 
+
     @Cacheable(value = "weatherNow", key = "'now'")
     public WeatherTodayDto getWeatherNow() {
         log.info("getWeatherNow 실행");

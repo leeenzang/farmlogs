@@ -48,4 +48,3 @@ management:
         enabled: true
         apiKey: ${DATADOG_API_KEY}
         step: 30s
-
