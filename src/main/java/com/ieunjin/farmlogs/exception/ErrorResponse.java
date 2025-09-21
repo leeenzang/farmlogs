@@ -1,6 +1,5 @@
-package com.ieunjin.farmlogs.dto;
+package com.ieunjin.farmlogs.exception;
 
-import com.ieunjin.farmlogs.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
