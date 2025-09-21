@@ -9,6 +9,7 @@ import com.ieunjin.farmlogs.dto.WeatherTomorrowDto;
 import com.ieunjin.farmlogs.external.WeatherClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class WeatherService {
 
     private final WeatherClient weatherClient;
     private final WeatherApiConfig weatherApiConfig;
+
 
     // 오늘 날씨
     @CachePut(value = "weatherNow", key = "'now'")
@@ -76,6 +78,7 @@ public class WeatherService {
         log.info("getWeatherTomorrow 실행 (캐시에 없을 때만 API 호출)");
         return callWeatherTomorrowApi();
     }
+
 
     private WeatherTomorrowDto callWeatherTomorrowApi() {
         String apiKey = weatherApiConfig.getApiKey();

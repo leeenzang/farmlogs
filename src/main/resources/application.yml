@@ -13,6 +13,7 @@ spring:
       cache-names: weatherNow, weatherTomorrow
       caffeine:
         spec: maximumSize=100,expireAfterWrite=2h
+
     hibernate:
       ddl-auto: update
     show-sql: false
@@ -48,4 +49,3 @@ management:
         enabled: true
         apiKey: ${DATADOG_API_KEY}
         step: 30s
-
