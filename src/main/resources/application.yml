@@ -1,7 +1,6 @@
 server:
   port: 8080
 
-
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL}
@@ -13,7 +12,8 @@ spring:
       type: caffeine
       cache-names: weatherNow, weatherTomorrow
       caffeine:
-        spec: maximumSize=100,expireAfterWrite=30m
+        spec: maximumSize=100,expireAfterWrite=2h
+
     hibernate:
       ddl-auto: update
     show-sql: false

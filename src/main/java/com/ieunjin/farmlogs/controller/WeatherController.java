@@ -1,6 +1,5 @@
 package com.ieunjin.farmlogs.controller;
 
-import com.ieunjin.farmlogs.dto.WeatherResponse;
 import com.ieunjin.farmlogs.dto.WeatherTodayDto;
 import com.ieunjin.farmlogs.dto.WeatherTomorrowDto;
 import com.ieunjin.farmlogs.service.WeatherService;
@@ -19,16 +18,14 @@ public class WeatherController {
     private final WeatherService weatherService;
 
     @GetMapping("/today")
-    public WeatherTodayDto fetchNowWeather() {
-        log.info("GET /api/weather/today 진입");
-        WeatherTodayDto dto = weatherService.fetchWeatherNow();
-        return dto;
+    public WeatherTodayDto getNowWeather() {
+        log.info("오늘 날씨 조회 요청");
+        return weatherService.getWeatherNow();
     }
 
     @GetMapping("/tomorrow")
-    public WeatherTomorrowDto fetchTomorrowWeather() {
-        log.info("GET /api/weather/tomorrow 진입");
-        WeatherTomorrowDto dto = weatherService.fetchWeatherTomorrow();
-        return dto;
+    public WeatherTomorrowDto getTomorrowWeather() {
+        log.info("내일 날씨 조회 요청");
+        return weatherService.getWeatherTomorrow();
     }
 }
