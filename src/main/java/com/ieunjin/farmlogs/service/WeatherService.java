@@ -9,6 +9,7 @@ import com.ieunjin.farmlogs.dto.WeatherTomorrowDto;
 import com.ieunjin.farmlogs.external.WeatherClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +28,21 @@ public class WeatherService {
     private final WeatherClient weatherClient;
     private final WeatherApiConfig weatherApiConfig;
 
-    @Cacheable(value = "weatherNow", key = "'now'")
-    public WeatherTodayDto fetchWeatherNow() {
-        String apiKey = weatherApiConfig.getApiKey();
+    // 오늘 날씨
+    @CachePut(value = "weatherNow", key = "'now'")
+    public WeatherTodayDto updateWeatherNow() {
+        log.info("updateWeatherNow 실행");
+        return callWeatherNowApi();
+    }
 
+    @Cacheable(value = "weatherNow", key = "'now'")
+    public WeatherTodayDto getWeatherNow() {
+        log.info("getWeatherNow 실행");
+        return callWeatherNowApi();
+    }
+
+    private WeatherTodayDto callWeatherNowApi() {
+        String apiKey = weatherApiConfig.getApiKey();
         String baseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = DateTimeUtil.getUltraSrtFcstBaseTime();
 
@@ -40,7 +52,6 @@ public class WeatherService {
         );
 
         List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
-
         String temperature = getValue(items, "T1H");
         String humidity = getValue(items, "REH");
         String pty = getValue(items, "PTY");
@@ -53,6 +64,42 @@ public class WeatherService {
                 .build();
     }
 
+    // 내일 날씨
+    @CachePut(value = "weatherTomorrow", key = "'tomorrow'")
+    public WeatherTomorrowDto updateWeatherTomorrow() {
+        log.info("updateWeatherTomorrow 실행 (API 호출 + 캐시 갱신)");
+        return callWeatherTomorrowApi();
+    }
+
+    @Cacheable(value = "weatherTomorrow", key = "'tomorrow'")
+    public WeatherTomorrowDto getWeatherTomorrow() {
+        log.info("getWeatherTomorrow 실행 (캐시에 없을 때만 API 호출)");
+        return callWeatherTomorrowApi();
+    }
+
+    private WeatherTomorrowDto callWeatherTomorrowApi() {
+        String apiKey = weatherApiConfig.getApiKey();
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String[] baseDateTime = DateTimeUtil.getBaseDateTime();
+
+        WeatherResponse response = weatherClient.getVilageFcst(
+                apiKey,
+                1, 1000, "JSON", baseDateTime[0], baseDateTime[1], GRID_X, GRID_Y
+        );
+
+        List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
+        String sky = getForecastValue(items, "SKY", tomorrow);
+        String pty = getForecastValue(items, "PTY", tomorrow);
+
+        return WeatherTomorrowDto.builder()
+                .weatherStatus(WeatherUtil.determineWeatherStatus(pty, sky))
+                .precipitationProbability(getForecastValue(items, "POP", tomorrow))
+                .lowestTemp(getForecastValue(items, "TMN", tomorrow))
+                .highestTemp(getForecastValue(items, "TMX", tomorrow))
+                .build();
+    }
+
+    // 공통 로직
     private String getValue(List<WeatherResponse.Item> items, String category) {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String closestTime = DateTimeUtil.getClosestFcstTime();
@@ -66,35 +113,6 @@ public class WeatherService {
                 .orElse("정보 없음");
     }
 
-
-    @Cacheable(value = "weatherTomorrow", key = "'tomorrow'")
-    public WeatherTomorrowDto fetchWeatherTomorrow() {
-        String apiKey = weatherApiConfig.getApiKey();
-        String tomorrow = LocalDate.now().plusDays(1)
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String[] baseDateTime = DateTimeUtil.getBaseDateTime();
-
-        WeatherResponse response = weatherClient.getVilageFcst(
-                apiKey,
-                1, 1000, "JSON",
-                baseDateTime[0],
-                baseDateTime[1],
-                GRID_X, GRID_Y
-        );
-
-        List<WeatherResponse.Item> items = response.getResponse().getBody().getItems().getItems();
-
-        String sky = getForecastValue(items, "SKY", tomorrow);
-        String pty = getForecastValue(items, "PTY", tomorrow);
-
-        return WeatherTomorrowDto.builder()
-                .weatherStatus(WeatherUtil.determineWeatherStatus(pty, sky))
-                .precipitationProbability(getForecastValue(items, "POP", tomorrow))
-                .lowestTemp(getForecastValue(items, "TMN", tomorrow))
-                .highestTemp(getForecastValue(items, "TMX", tomorrow))
-                .build();
-    }
-
     private String getForecastValue(List<WeatherResponse.Item> items, String category, String fcstDate) {
         return items.stream()
                 .filter(i -> category.equals(i.getCategory()) && fcstDate.equals(i.getFcstDate()))
@@ -102,6 +120,4 @@ public class WeatherService {
                 .findFirst()
                 .orElse("정보 없음");
     }
-
-
 }
