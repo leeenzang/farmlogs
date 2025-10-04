@@ -34,4 +34,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     List<Diary> findAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate, Sort sort);
 
     Optional<Diary> findByUserAndDate(User user, LocalDate date);
+
+    List<Diary> findAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate);
+
 }
