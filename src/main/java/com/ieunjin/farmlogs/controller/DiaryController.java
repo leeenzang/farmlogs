@@ -118,6 +118,7 @@ public class DiaryController {
             @RequestParam int year,
             @RequestParam int month
     ) {
+        log.info("특정 연월의 일기 날짜 목록 조회");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<LocalDate> dates = diaryService.getDiaryDatesOfMonth(username, year, month);
         return ResponseEntity.ok(Map.of("dates", dates));
