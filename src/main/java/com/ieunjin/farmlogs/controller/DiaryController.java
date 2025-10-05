@@ -1,9 +1,6 @@
 package com.ieunjin.farmlogs.controller;
 
-import com.ieunjin.farmlogs.dto.diary.DiaryCreateRequest;
-import com.ieunjin.farmlogs.dto.diary.DiaryListResponse;
-import com.ieunjin.farmlogs.dto.diary.DiaryResponse;
-import com.ieunjin.farmlogs.dto.diary.DiaryUpdateRequest;
+import com.ieunjin.farmlogs.dto.diary.*;
 import com.ieunjin.farmlogs.jwt.JwtUtils;
 import com.ieunjin.farmlogs.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/diaries")
@@ -96,13 +95,32 @@ public class DiaryController {
         log.info("다이어리 엑셀 내보내기 완료 - username={}", username);
     }
 
-    @Operation(summary = "특정 날짜 다이어리 조회")
+    @Operation(summary = "특정 날짜 + 과거 다이어리 조회")
     @GetMapping("/date/{date}")
-    public ResponseEntity<DiaryResponse> getDiaryByDate(
-            @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    public ResponseEntity<?> getDiaryByDate(
+            @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false, defaultValue = "false") boolean include_past
     ) {
-        log.info("특정 날짜 다이어리 조회 요청 - date={}", date);
-        DiaryResponse response = diaryService.getDiaryByExactDate(date);
-        return ResponseEntity.ok(response);
+        if (include_past) {
+            log.info("특정 날짜 + 과거 일기 조회 요청 - date={}", date);
+            DiaryWithPastResponse response = diaryService.getDiaryWithPast(date);
+            return ResponseEntity.ok(response);
+        } else {
+            log.info("특정 날짜 다이어리 조회 요청 - date={}", date);
+            DiaryResponse response = diaryService.getDiaryByExactDate(date);
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @Operation(summary = "특정 연월의 일기 날짜 목록 조회")
+    @GetMapping("/calendar")
+    public ResponseEntity<?> getDiaryDatesOfMonth(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        log.info("특정 연월의 일기 날짜 목록 조회");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<LocalDate> dates = diaryService.getDiaryDatesOfMonth(username, year, month);
+        return ResponseEntity.ok(Map.of("dates", dates));
     }
 }

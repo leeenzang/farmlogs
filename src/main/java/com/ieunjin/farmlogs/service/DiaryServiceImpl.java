@@ -1,10 +1,7 @@
 package com.ieunjin.farmlogs.service;
 
 import com.ieunjin.farmlogs.common.LunarDateUtil;
-import com.ieunjin.farmlogs.dto.diary.DiaryCreateRequest;
-import com.ieunjin.farmlogs.dto.diary.DiaryListResponse;
-import com.ieunjin.farmlogs.dto.diary.DiaryResponse;
-import com.ieunjin.farmlogs.dto.diary.DiaryUpdateRequest;
+import com.ieunjin.farmlogs.dto.diary.*;
 import com.ieunjin.farmlogs.entity.Diary;
 import com.ieunjin.farmlogs.entity.User;
 import com.ieunjin.farmlogs.exception.BusinessException;
@@ -199,5 +196,24 @@ public class DiaryServiceImpl implements DiaryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DIARY));
 
         return DiaryResponse.from(diary);
+    }
+
+    public DiaryWithPastResponse getDiaryWithPast(LocalDate date) {
+        DiaryResponse today = getDiaryByExactDate(date);
+        DiaryResponse lastYear = getDiaryByExactDate(date.minusYears(1));
+        DiaryResponse twoYearsAgo = getDiaryByExactDate(date.minusYears(2));
+        return new DiaryWithPastResponse(today, lastYear, twoYearsAgo);
+    }
+
+    public List<LocalDate> getDiaryDatesOfMonth(String username, int year, int month) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        return diaryRepository.findAllByUserAndDateBetween(user, start, end)
+                .stream()
+                .map(Diary::getDate)
+                .distinct()
+                .toList();
     }
 }
